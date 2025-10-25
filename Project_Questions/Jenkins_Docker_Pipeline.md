@@ -52,5 +52,3 @@ These are the two syntaxes available for writing a `Jenkinsfile`.
 | **Structure** | **Structured and rigid.** Defined by required blocks like `pipeline { }`, `agent`, `stages`, and `steps`. | **Flexible, Groovy-based.** Code blocks are less restrictive and defined using Groovy control flow logic. |
 | **Syntax** | Easier to read, learn, and enforce a standard structure. | More powerful, allowing complex logic (loops, functions, etc.). |
 | **Use Case** | Ideal for **simple-to-moderate** CI/CD pipelines (like your project) where readability and standardization are key. | Best for **highly complex** workflows that require advanced programming features and conditional logic. |
-
-Your `Jenkinsfile` used the **Declarative** syntax, which is the modern and preferred approach for most pipelines today because it's easier for teams to maintain.
