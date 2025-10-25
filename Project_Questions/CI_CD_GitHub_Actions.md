@@ -1,72 +1,85 @@
-## Interview Questions & Simple Answers
+## 📝 Git and Version Control Interview Prep
 
-### [cite_start]1. What is CI/CD? [cite: 20]
+## 1. What is Git?
 
-**CI/CD** stands for **Continuous Integration** and **Continuous Delivery** (or **Continuous Deployment**). It's a set of practices that automates the entire software development lifecycle.
+**Git** is a **Version Control System (VCS)**. Think of it like a powerful, digital time machine for your code.
 
-* [cite_start]**CI (Continuous Integration):** This is the practice of frequently merging code changes into a central repository, where automated tests and builds are run immediately[cite: 11]. *(In our task, this was running the `npm test` script.)*
-* [cite_start]**CD (Continuous Delivery/Deployment):** This automates the delivery of validated code to a repository (like DockerHub) or directly to a live environment[cite: 4, 10]. *(In our task, this was building the Docker image and pushing it.)*
-
-***
-
-### [cite_start]2. How do GitHub Actions work? [cite: 21]
-
-**GitHub Actions** is an automation tool built into GitHub. It works by using a YAML file (like our `main.yml`) to define **workflows**.
-
-[cite_start]When an event occurs (like pushing code to `main` [cite: 13][cite_start]), the workflow triggers, and GitHub allocates a virtual machine (called a **runner**) to execute the defined sequence of **jobs** and **steps**[cite: 9, 23].
+* It **tracks every change** made to your files.
+* It allows you to look back at any previous version, undo mistakes, and coordinate work among multiple people.
+* Because it's **distributed**, every user has a complete copy of the project's history on their computer.
 
 ***
 
-### [cite_start]3. What are runners? [cite: 22]
+## 2. What is the difference between merge and rebase?
 
-**Runners** are the virtual servers or machines that execute the steps in your GitHub Actions workflow.
+Both **merge** and **rebase** combine changes from one branch into another, but they do it differently:
 
-* Think of a runner as the **robot's virtual body**.
-* In our task, we used a GitHub-hosted runner (`runs-on: ubuntu-latest`), which is a fresh, temporary Ubuntu virtual machine provided by GitHub to run the build, test, and deployment commands.
-
-***
-
-### [cite_start]4. Difference between jobs and steps. [cite: 23]
-
-* [cite_start]**Job:** A job is a set of **steps** that executes on the same **runner** (virtual machine)[cite: 9, 23]. Jobs run independently of each other by default. *(In our task, we had one job named `build-and-deploy`.)*
-* **Step:** A step is a single task or command within a job. [cite_start]It can be a command line action (like `run: npm test`) or an action defined by the community (like `uses: actions/checkout@v4`)[cite: 23].
+| Feature | `git merge` | `git rebase` |
+| :--- | :--- | :--- |
+| **History** | **Keeps** the full, chronological history. | **Rewrites** history to create a straight line. |
+| **Commit** | Creates a **new "merge commit."** | Moves your commits to the end of the target branch. **No extra merge commit.** |
+| **Commit Graph** | **Messy/Non-linear** (Shows when branches joined). | **Clean/Linear** (Makes history look simple). |
+| **Best Used For** | Merging into long-lived branches like `main` or `dev`. | Cleaning up your local feature branch before merging it into `dev`. |
 
 ***
 
-### [cite_start]5. How to secure secrets in GitHub Actions? [cite: 24]
+## 3. What is a Pull Request (PR)?
 
-You secure sensitive information (like our DockerHub token) by using **GitHub Secrets**.
+A **Pull Request (PR)** (or Merge Request) is not a Git command itself, but a **feature of hosting services** like GitHub.
 
-* **Process:** Instead of putting the password directly into the `main.yml` file, you store it securely in the **Settings $\rightarrow$ Secrets and variables** section of the repository.
-* **Access:** In the workflow file, you access the secret using the syntax `${{ secrets.DOCKER_PASSWORD }}`.
-* **Security:** GitHub encrypts these values and ensures they are never printed in the logs, protecting them from exposure.
+It's a way to tell others, "I've finished my work on this branch. Please review my changes, run tests, and if everything looks good, **pull** my code into the main branch." It is the primary process for **code review and quality gatekeeping**.
 
 ***
 
-### [cite_start]6. How to handle deployment errors? [cite: 25]
+## 4. How do you resolve merge conflicts?
 
-You handle errors in a pipeline by making your steps resilient and adding proper error reporting:
+A **merge conflict** happens when two different branches change the exact same lines of code. Git stops and asks you to manually decide which code is correct.
 
-1.  **Debugging:** When a job fails (shows a red X), you immediately check the **Action logs** to identify the specific step and error message (e.g., "Login Failed," "Dockerfile not found").
-2.  **Conditional Steps:** Use conditions (like `if: always()`) to run cleanup or notification steps even after a preceding step has failed.
-3.  **Rollback:** In a real deployment scenario, you would set up an additional job to automatically revert (rollback) the deployment to the last known working version if the new deployment fails health checks.
-
-***
-
-### [cite_start]7. Explain the Docker build-push workflow. [cite: 26]
-
-[cite_start]This workflow is what we automated to get the image to DockerHub[cite: 10]:
-
-1.  **Build:** The pipeline reads the **`Dockerfile`** to get instructions on how to package the app. It executes these steps (like installing Node.js and dependencies) to create a portable container image.
-2.  **Tag:** The image is given a unique identifier (**tag**), like `latest` or a commit SHA.
-3.  **Login:** The pipeline logs into the Docker registry (DockerHub) using stored credentials.
-4.  [cite_start]**Push:** The final, tagged container image is uploaded (**pushed**) to the repository in DockerHub[cite: 11].
+1.  **Open the file** that Git marks as having a conflict.
+2.  Look for conflict markers: `<<<<<<<`, `=======`, and `>>>>>>>`.
+3.  **Manually edit the file** to choose the correct code (combining changes or picking one version).
+4.  **Remove** the conflict markers.
+5.  **Stage** the edited file: `git add <file-name>`.
+6.  **Commit** the merge to finish the process.
 
 ***
 
-### [cite_start]8. How can you test a CI/CD pipeline locally? [cite: 27]
+## 5. What are Git tags?
 
-While the full deployment *push* only happens on the GitHub runner, you can test the individual components locally:
+**Git tags** are like **permanent, unmoving labels** you put on a specific commit in your history.
 
-1.  **Local Application Test:** You can run `npm start` and `npm test` locally to ensure the application code is correct.
-2.  **Local Docker Build:** You can run `docker build -t my-app .` in your terminal to confirm the `Dockerfile` is valid and the image builds successfully **before** pushing it to GitHub. This catches many common errors early.
+* They are typically used to mark **major release points** of a project, such as **v1.0.0**.
+* Unlike branches, tags **never move**. They permanently mark a known, stable version of the code for easy reference.
+
+***
+
+## 6. What is Git workflow?
+
+A **Git workflow** is a defined set of rules, strategies, and procedures that a team follows to use Git effectively. It dictates:
+
+* **When** to create branches (e.g., for every feature or bug fix).
+* **How** to name branches (e.g., `feature/login` or `fix/bug-45`).
+* **How** to integrate changes (e.g., always use a Pull Request to merge into `dev`).
+
+The strategy we used with `main`, `dev`, and `feature` branches is part of the professional **Git Flow** model.
+
+***
+
+## 7. Explain `git stash`
+
+The `git stash` command is used to **temporarily save your uncommitted changes** and clean your working directory.
+
+It's used when you need to switch branches quickly to work on an urgent bug fix, but you haven't finished your current work yet and can't commit incomplete code. You run `git stash` to save the work, fix the bug, and then run `git stash pop` to **re-apply** the saved changes exactly where you left off.
+
+***
+
+## 8. What is the use of `.gitignore`?
+
+The **`.gitignore`** file is a plain text file where you list the file names and patterns that **Git should completely ignore** and *not* track.
+
+It is essential to keep the repository clean and small by ignoring files that:
+
+1.  Are **temporary** or created automatically (like log files: `*.log`).
+2.  Contain **private or sensitive data** (like configuration files or passwords).
+3.  Are **very large binaries** or system files that don't need version control.
+```
